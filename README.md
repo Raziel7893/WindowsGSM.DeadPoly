@@ -29,6 +29,10 @@
 - Range 7777-7876 for P2P traffic
   - They most likely just need a Firewall exception (if at all)
 
+### Files To Backup
+- WindowsGSM\servers\%ID%\serverfiles\DeadPoly\Saved
+- WindowsGSM\servers\%ID%\configs
+
 ### Support
 [WGSM](https://discord.com/channels/590590698907107340/645730252672335893)
 
