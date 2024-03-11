@@ -61,9 +61,16 @@ namespace WindowsGSM.Plugins
         {
             // Specify the file path
             string configPath = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, ConfigFile);
-            string templatePath = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, ConfigFile);
+            string templatePath = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, ConfigTemplate);
 
-            var content = File.ReadAllLines(File.Exists(configPath) ? configPath : templatePath);
+            var srcFile = File.Exists(configPath) ? configPath : templatePath;
+
+            if(!File.Exists(srcFile))
+            {
+                Error = $"Neither Configfile({configPath}) nor Templatefile{templatePath} could be loaded. not possible to create or modify config";
+                return;
+            }
+            var content = File.ReadAllLines(srcFile);
             StringBuilder sb = new StringBuilder();
             foreach (var line in content)
             {
