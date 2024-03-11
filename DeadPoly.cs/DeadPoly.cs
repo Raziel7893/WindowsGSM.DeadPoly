@@ -37,8 +37,11 @@ namespace WindowsGSM.Plugins
         //public override string StartPath => "DeadPolyServer.exe"; // Game server start path
         public override string StartPath => "DeadPoly\\Binaries\\Win64\\DeadPolyServer.exe";
         public string FullName = "DeadPoly Dedicated Server"; // Game server FullName
-        public string ConfigFile = "DeadPoly\\Saved\\Config\\WindowsServer\\Game.ini"; // Game server FullName
-        public string ConfigTemplate = "DeadPoly\\Saved\\1 RENAME Config\\WindowsServer\\Game.ini"; // Game server FullName
+
+        public const string ConfigFolder = "DeadPoly\\Saved\\Config\\WindowsServer";
+        public const string TemplateFolder = "DeadPoly\\Saved\\1 RENAME Config\\WindowsServer";
+        public const string ConfigFile = "\\Game.ini";
+
         public bool AllowsEmbedConsole = true;  // Does this server support output redirect?
         public int PortIncrements = 1; // This tells WindowsGSM how many ports should skip after installation
 
@@ -60,14 +63,15 @@ namespace WindowsGSM.Plugins
         public async void CreateServerCFG()
         {
             // Specify the file path
-            string configPath = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, ConfigFile);
-            string templatePath = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, ConfigTemplate);
+            string configFile = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, ConfigFolder, ConfigFile);
+            string configFolder = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, ConfigFolder);
+            string templateFile = Functions.ServerPath.GetServersServerFiles(_serverData.ServerID, TemplateFolder, ConfigFile);
 
-            var srcFile = File.Exists(configPath) ? configPath : templatePath;
+            var srcFile = File.Exists(configFile) ? configFile : templateFile;
 
             if(!File.Exists(srcFile))
             {
-                Error = $"Neither Configfile({configPath}) nor Templatefile{templatePath} could be loaded. not possible to create or modify config";
+                Error = $"Neither Configfile({configFile}) nor Templatefile{templateFile} could be loaded. not possible to create or modify config";
                 return;
             }
             var content = File.ReadAllLines(srcFile);
@@ -92,8 +96,9 @@ namespace WindowsGSM.Plugins
             if (!content.Contains("PlayerSlots="))
                 sb.Append($"PlayerSlots={serverData.ServerMaxPlayer}");
 
+            Directory.CreateDirectory(configFolder);
             // Write the JSON content to the file
-            File.WriteAllText(configPath, sb.ToString());
+            File.WriteAllText(configFile, sb.ToString());
         }
 
         // - Start server function, return its Process to WindowsGSM
